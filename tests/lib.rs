@@ -1,5 +1,6 @@
-use asciimath::{eval, CustomFn, Error, Scope};
 use std::f64;
+
+use asciimath::{CustomFn, Error, eval, Scope};
 
 #[test]
 fn single_item() {
@@ -143,4 +144,10 @@ fn constants() {
 #[test]
 fn division_by_zero() {
     assert_eq!(Ok(f64::INFINITY), eval("1/0", &Scope::new()));
+}
+
+#[test]
+fn shifts() {
+    assert_eq!(Ok(4.0), eval("1<<2", &Scope::new()));
+    assert_eq!(Ok(32.0), eval("128>>2", &Scope::new()));
 }

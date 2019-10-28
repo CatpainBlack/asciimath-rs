@@ -1,5 +1,6 @@
-use crate::ast::NumericLiteral;
 use std::{cmp, fmt};
+
+use crate::ast::NumericLiteral;
 
 pub type TokenList = Vec<Token>;
 
@@ -27,6 +28,8 @@ pub enum Operator {
     IsEqualTo,
     IsNotEqualTo,
     Not,
+    ShiftRight,
+    Logical,
 }
 
 impl fmt::Display for Operator {
@@ -47,6 +50,8 @@ impl fmt::Display for Operator {
                 Operator::IsEqualTo => "==",
                 Operator::IsNotEqualTo => "!=",
                 Operator::Not => "!",
+                Operator::Logical => "<<",
+                Operator::ShiftRight => ">>"
             }
         )
     }
@@ -63,6 +68,7 @@ impl cmp::PartialEq for Operator {
         self.get_precedence() == other.get_precedence()
     }
 }
+
 impl cmp::PartialOrd for Operator {
     fn partial_cmp(&self, other: &Operator) -> Option<cmp::Ordering> {
         Some(self.get_precedence().cmp(&other.get_precedence()))
@@ -84,6 +90,8 @@ impl Operator {
             | Operator::IsEqualTo
             | Operator::IsNotEqualTo
             | Operator::Not => 2,
+            Operator::ShiftRight
+            | Operator::Logical => 5
         }
     }
 

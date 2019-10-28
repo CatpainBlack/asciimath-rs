@@ -1,5 +1,5 @@
 use crate::{
-    ast::{resolve_fn, resolve_var, NumericLiteral, Scope},
+    ast::{NumericLiteral, resolve_fn, resolve_var, Scope},
     error::Error,
     tokens::{Operator, Token, TokenList},
     util::consume_while,
@@ -27,8 +27,7 @@ fn resolve_vars(expr: &str, scope: &Scope, mut tokens: &mut Vec<Token>) {
         if !var.is_empty() {
             if is_valid_var {
                 new_var(var.clone(), &mut tokens);
-            }
-            else {
+            } else {
                 for c in var.chars() {
                     new_var(c.to_string(), &mut tokens);
                 }
@@ -63,13 +62,13 @@ fn parse_implicit(
                     .map_err(|_e| Error::InvalidToken(num))?;
                 tokens.push(Token::Number(n));
                 tokens.push(Token::Operator(Operator::Multiply));
-            },
+            }
             'a'..='z' | 'A'..='Z' => {
                 let vars = consume_while(&mut chars, |c| c.is_alphabetic());
                 resolve_vars(&vars, scope, tokens);
                 chars.by_ref().next();
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
     Ok(())
@@ -88,27 +87,39 @@ fn get_token(ch: Option<&char>, t: &mut Vec<Token>) -> Option<Token> {
                     t.push(Token::Number(-1.0));
                     t.push(Token::Operator(Operator::Multiply));
                     None
-                },
+                }
                 _ => Some(Token::Operator(Operator::Substract)),
             },
             '*' => Some(Token::Operator(Operator::Multiply)),
             '/' => Some(Token::Operator(Operator::Divide)),
             '^' => Some(Token::Operator(Operator::Exponentiate)),
-            '>' => Some(Token::Operator(Operator::IsGreaterThan)),
-            '<' => Some(Token::Operator(Operator::IsLessThan)),
+            '>' => match t.last() {
+                Some(Token::Operator(Operator::IsGreaterThan)) => {
+                    t.pop();
+                    Some(Token::Operator(Operator::ShiftRight))
+                }
+                _ => Some(Token::Operator(Operator::IsGreaterThan))
+            }
+            '<' => match t.last() {
+                Some(Token::Operator(Operator::IsLessThan)) => {
+                    t.pop();
+                    Some(Token::Operator(Operator::Logical))
+                }
+                _ => Some(Token::Operator(Operator::IsLessThan))
+            }
             '=' => match t.last() {
                 Some(Token::Operator(Operator::Not)) => {
                     t.pop();
                     Some(Token::Operator(Operator::IsNotEqualTo))
-                },
+                }
                 Some(Token::Operator(Operator::IsGreaterThan)) => {
                     t.pop();
                     Some(Token::Operator(Operator::IsGreaterThanOrEqualTo))
-                },
+                }
                 Some(Token::Operator(Operator::IsLessThan)) => {
                     t.pop();
                     Some(Token::Operator(Operator::IsLessThanOrEqualTo))
-                },
+                }
                 Some(Token::Operator(Operator::IsEqualTo)) => None,
                 _ => Some(Token::Operator(Operator::IsEqualTo)),
             },
@@ -118,8 +129,7 @@ fn get_token(ch: Option<&char>, t: &mut Vec<Token>) -> Option<Token> {
             '!' => Some(Token::Operator(Operator::Not)),
             _ => None,
         }
-    }
-    else {
+    } else {
         None
     }
 }
@@ -137,8 +147,7 @@ pub fn tokenize<'a>(expr: &str, scope: &'a Scope) -> Result<TokenList, Error> {
             if chars.peek() == Some(&'(') && resolve_fn(&temp, scope).is_ok() {
                 tokens.push(Token::Function(temp));
                 continue;
-            }
-            else {
+            } else {
                 parse_implicit(&temp, scope, &mut tokens)?;
                 if chars.peek() != Some(&'(') {
                     tokens.pop();
@@ -153,4 +162,5 @@ pub fn tokenize<'a>(expr: &str, scope: &'a Scope) -> Result<TokenList, Error> {
 
     Ok(tokens)
 }
+
 mod tests;

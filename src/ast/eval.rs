@@ -1,10 +1,11 @@
+use std::f64::EPSILON;
+
 use crate::{
-    ast::{resolve_fn, resolve_var, Args, Node, Root, Scope},
+    ast::{Args, Node, resolve_fn, resolve_var, Root, Scope},
     error::Error,
     tokens::{Operator, Token},
     util::Result,
 };
-use std::f64::EPSILON;
 
 pub type NumericLiteral = f64;
 
@@ -23,8 +24,7 @@ pub trait Evaluate {
 fn negate(n: f64) -> f64 {
     if n == 0.0 {
         1.0
-    }
-    else {
+    } else {
         0.0
     }
 }
@@ -32,8 +32,7 @@ fn negate(n: f64) -> f64 {
 fn int(b: bool) -> f64 {
     if b {
         1.0
-    }
-    else {
+    } else {
         0.0
     }
 }
@@ -50,23 +49,30 @@ pub fn eval_operator(
         Operator::Substract => {
             Ok(evaled_args.nth(0).ok_or(Error::MissingOperands(op_str))?
                 - evaled_args.sum::<NumericLiteral>())
-        },
+        }
+        Operator::Logical => {
+            let num = (args[0] as i64) << (args[1] as i64);
+            Ok(num as f64)
+        }
+        Operator::ShiftRight => {
+            let num = (args[0] as i64) >> (args[1] as i64);
+            Ok(num as f64)
+        }
         Operator::Multiply => Ok(evaled_args.product()),
         Operator::Divide => {
             Ok(evaled_args.nth(0).ok_or(Error::MissingOperands(op_str))?
                 / evaled_args.product::<NumericLiteral>())
-        },
+        }
         Operator::Exponentiate => {
-            let base =
-                evaled_args.nth(0).ok_or(Error::MissingOperands(op_str))?;
+            let base = evaled_args.nth(0).ok_or(Error::MissingOperands(op_str))?;
             Ok(evaled_args.fold(*base, |acc, v| acc.powf(*v)))
-        },
+        }
         Operator::IsGreaterThan => Ok(int(args[0] > args[1])),
         Operator::IsLessThan => Ok(int(args[0] < args[1])),
         Operator::IsGreaterThanOrEqualTo => Ok(int(args[0] >= args[1])),
         Operator::IsLessThanOrEqualTo => {
             Ok(((args[0] <= args[1]) as i8).into())
-        },
+        }
         Operator::IsEqualTo => Ok(int((args[0] - args[1]).abs() < EPSILON)),
         Operator::IsNotEqualTo => Ok(int((args[0] - args[1]).abs() > EPSILON)),
         Operator::Not => Ok(negate(args[0])),
@@ -97,11 +103,11 @@ impl Evaluate for Node {
                     .collect::<Result<Vec<NumericLiteral>>>()?;
 
                 eval_operator(&operator, &args)
-            },
+            }
             Token::Function(ref f) => {
                 let args = eval_args(&self.args, scope, f.clone())?;
                 resolve_fn(f, scope)?(&args)
-            },
+            }
 
             Token::Number(num) => Ok(num),
             Token::Variable(ref var) => resolve_var(&var, scope),

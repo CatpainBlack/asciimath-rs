@@ -6,6 +6,8 @@ mod test {
         scope,
         tokens::{Operator, Token},
     };
+    use crate::tokens::Token::Number;
+
     #[test]
     fn lexer_negative_numbers() {
         let tokens = tokenize("x+-1", &Scope::new()).unwrap();
@@ -171,6 +173,29 @@ mod test {
             ]
         )
     }
+
+    #[test]
+    fn lexer_shift_left() {
+        let tokens = tokenize("1<<2", &Scope::new()).unwrap();
+        let expected_tokens = vec![
+            Token::Number(1.0),
+            Token::Operator(Operator::Logical),
+            Token::Number(2.0)
+        ];
+        assert_eq!(tokens, expected_tokens)
+    }
+
+    #[test]
+    fn lexer_shift_right() {
+        let tokens = tokenize("1>>2", &Scope::new()).unwrap();
+        let expected_tokens = vec![
+            Token::Number(1.0),
+            Token::Operator(Operator::ShiftRight),
+            Token::Number(2.0)
+        ];
+        assert_eq!(tokens, expected_tokens)
+    }
+
 
     #[test]
     fn lexer_floats() {
