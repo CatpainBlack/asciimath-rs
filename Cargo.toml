@@ -1,8 +1,8 @@
 [package]
 name = "asciimath"
 edition = "2018"
-version = "0.8.8"
-authors = ["Gregory <gregory.mkv@gmail.com>"]
+version = "0.8.8-fantasm"
+authors = ["Gregory <gregory.mkv@gmail.com>","Guy Black <captainblack@zx-spectrum.org.uk"]
 description = "Mathematical expression parser and evaluator"
 keywords = ["math", "expression", "evaluation", "parser"]
 license = "MIT"

@@ -29,7 +29,9 @@ pub enum Operator {
     IsNotEqualTo,
     Not,
     ShiftRight,
-    Logical,
+    ShiftLeft,
+    BitwiseOr,
+    BitwiseAnd,
 }
 
 impl fmt::Display for Operator {
@@ -50,8 +52,10 @@ impl fmt::Display for Operator {
                 Operator::IsEqualTo => "==",
                 Operator::IsNotEqualTo => "!=",
                 Operator::Not => "!",
-                Operator::Logical => "<<",
-                Operator::ShiftRight => ">>"
+                Operator::ShiftLeft => "<<",
+                Operator::ShiftRight => ">>",
+                Operator::BitwiseOr => "|",
+                Operator::BitwiseAnd => "&",
             }
         )
     }
@@ -91,7 +95,9 @@ impl Operator {
             | Operator::IsNotEqualTo
             | Operator::Not => 2,
             Operator::ShiftRight
-            | Operator::Logical => 5
+            | Operator::BitwiseOr
+            | Operator::BitwiseAnd
+            | Operator::ShiftLeft => 5
         }
     }
 

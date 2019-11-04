@@ -50,12 +50,20 @@ pub fn eval_operator(
             Ok(evaled_args.nth(0).ok_or(Error::MissingOperands(op_str))?
                 - evaled_args.sum::<NumericLiteral>())
         }
-        Operator::Logical => {
-            let num = (args[0] as i64) << (args[1] as i64);
+        Operator::BitwiseOr => {
+            let num = (args[0].abs() as i64) | (args[1].abs() as i64);
+            Ok(num as f64)
+        }
+        Operator::BitwiseAnd => {
+            let num = (args[0].abs() as i64) & (args[1].abs() as i64);
+            Ok(num as f64)
+        }
+        Operator::ShiftLeft => {
+            let num = (args[0].abs() as i64) << (args[1].abs() as i64);
             Ok(num as f64)
         }
         Operator::ShiftRight => {
-            let num = (args[0] as i64) >> (args[1] as i64);
+            let num = (args[0].abs() as i64) >> (args[1].abs() as i64);
             Ok(num as f64)
         }
         Operator::Multiply => Ok(evaled_args.product()),

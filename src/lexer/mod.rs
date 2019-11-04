@@ -103,7 +103,7 @@ fn get_token(ch: Option<&char>, t: &mut Vec<Token>) -> Option<Token> {
             '<' => match t.last() {
                 Some(Token::Operator(Operator::IsLessThan)) => {
                     t.pop();
-                    Some(Token::Operator(Operator::Logical))
+                    Some(Token::Operator(Operator::ShiftLeft))
                 }
                 _ => Some(Token::Operator(Operator::IsLessThan))
             }
@@ -127,6 +127,8 @@ fn get_token(ch: Option<&char>, t: &mut Vec<Token>) -> Option<Token> {
             ')' => Some(Token::RightParenthesis),
             ',' => Some(Token::Comma),
             '!' => Some(Token::Operator(Operator::Not)),
+            '|' => Some(Token::Operator(Operator::BitwiseOr)),
+            '&' => Some(Token::Operator(Operator::BitwiseAnd)),
             _ => None,
         }
     } else {

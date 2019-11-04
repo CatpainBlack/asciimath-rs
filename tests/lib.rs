@@ -151,3 +151,9 @@ fn shifts() {
     assert_eq!(Ok(4.0), eval("1<<2", &Scope::new()));
     assert_eq!(Ok(32.0), eval("128>>2", &Scope::new()));
 }
+
+#[test]
+fn logical() {
+    assert_eq!(Ok(3.0), eval("2|1", &Scope::new()));
+    assert_eq!(Ok(4.0), eval("255&4", &Scope::new()));
+}

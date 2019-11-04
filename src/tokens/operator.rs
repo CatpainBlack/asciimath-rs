@@ -15,6 +15,8 @@ pub enum Operator {
     Not,
     ShiftLeft,
     ShiftRight,
+    LogicalOr,
+    LogicalAnd,
 }
 
 impl fmt::Display for Operator {
@@ -36,7 +38,9 @@ impl fmt::Display for Operator {
                 Operator::IsNotEqualTo => "!=",
                 Operator::Not => "!",
                 Operator::ShiftLeft => "<<",
-                Operator::ShiftRight => ">>"
+                Operator::ShiftRight => ">>",
+                Operator::LogicalOr => "|",
+                Operator::LogicalAnd => "&",
             }
         )
     }
@@ -76,6 +80,8 @@ impl Operator {
             | Operator::IsNotEqualTo
             | Operator::Not => 2,
             Operator::ShiftLeft
+            | Operator::LogicalOr
+            | Operator::LogicalAnd
             | Operator::ShiftRight => 2
         }
     }

@@ -179,7 +179,7 @@ mod test {
         let tokens = tokenize("1<<2", &Scope::new()).unwrap();
         let expected_tokens = vec![
             Token::Number(1.0),
-            Token::Operator(Operator::Logical),
+            Token::Operator(Operator::ShiftLeft),
             Token::Number(2.0)
         ];
         assert_eq!(tokens, expected_tokens)
